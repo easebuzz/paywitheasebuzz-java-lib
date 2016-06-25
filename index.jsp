@@ -65,7 +65,7 @@ public boolean empty(String s)
 	{
       		String paramName = (String)paramNames.nextElement();
       
-      		String paramValue = request.getParameter(paramName);
+      		String paramValue = ((String)request.getParameter(paramName)).trim();
 
 		params.put(paramName,paramValue);
 	}
