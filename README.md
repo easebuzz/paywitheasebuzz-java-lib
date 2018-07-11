@@ -1,7 +1,7 @@
 # paywitheasebuzz-lib
 JSP integration kit for pay with easebuzz pay.easebuzz.in
 
-# Requirement Software
+# Software Requirement
 *setup JSP kits on test/devlopement/production enviroment install below software*
 
 1. Apache tomacat
