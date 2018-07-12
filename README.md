@@ -23,7 +23,9 @@ https://docs.easebuzz.in/
 
 1. import json-simple-1.1.1.jar and jstl-1.2.jar to your project.
 2.  Setup initiate payment 
+
 	2.1 copy paste all the jsp part from initate_payment_invoke.jsp to file
+
 	2.2 change the merchant_key, salt, and env values accordingly.
 	```
 		String merchant_key = "XXXXXX";
@@ -71,12 +73,17 @@ https://docs.easebuzz.in/
         String udf4 = "";	//optional param for other datas like address,category etc
         String udf5 = "";	//optional param for other datas like address,category etc
     ```
+    2.5 change salt value in response.jsp
+    	```
+    		String salt = "XXXXXXXXXXXX";
+    	```
 
-
-	2.5 ready to start receiving payment online.
+	2.6 ready to start receiving payment online.
 
 3. setup transaction api in your system
+
 	3.1 copy paste all the jsp part from transaction_return.jsp to file.
+
 	3.2 change the values accordingly.
 	```
 		String key = "XXXXXX";
@@ -116,7 +123,9 @@ https://docs.easebuzz.in/
 	3.5 ready to start  transactional information real time.
 	
 4. setup transactional records date wise.
+
 	4.1  copy paste all the jsp part from transaction_date_return.jsp to file.
+
 	4.2  change the values accordingly.
 	```
 		String key = "XXXXXX";
@@ -154,7 +163,9 @@ https://docs.easebuzz.in/
 	4.5 ready to start  transactional information date wise.
 
 5. setup payout information date wise.
+
 	5.1  copy paste all the jsp part from payout_return.jsp to file.
+
 	5.2  change the values accordingly.
 	```
 		String key = "XXXXXX";
@@ -192,7 +203,9 @@ https://docs.easebuzz.in/
 	5.4 ready to start receiving payout information date wise.
 
 6. setup Refund api so that you can start refunding your customers as you needed.
+
 	6.1  copy paste all the jsp part from refund_return.jsp to file.
+
 	6.2  change the values accordingly.
 	```
 		String key = "XXXXXX";
