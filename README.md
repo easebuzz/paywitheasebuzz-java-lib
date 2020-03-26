@@ -244,3 +244,18 @@ https://docs.easebuzz.in/
         String phone = "";	// customer's phone number
     ```
 	6.5 ready to start invoking refunds from your system.
+	
+	
+### NOTE: 
+According to PCI regulations, payment processing is not allowed on TLS v1 and TLS v1.1. Hence, if your JDK does not have TLS v1.2 or later or having below java 8, the Easebuzz Payment gateway will throw an error while initiating the payment.
+
+You can refer below code to initiate the payment gateway.
+Add below code in initiate_payment_invoke.jsp  at line 125
+ ```
+URL url = new URL(base_url + "payment/initiateLink");
+javax.net.ssl.SSLContext sslContext = javax.net.ssl.SSLContext.getInstance("TLSv1.2");
+sslContext.init(null, null, new SecureRandom());
+ 
+javax.net.ssl.HttpsURLConnection con = (javax.net.ssl.HttpsURLConnection) url.openConnection();
+con.setSSLSocketFactory(sslContext.getSocketFactory());
+```
