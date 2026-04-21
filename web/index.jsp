@@ -16,7 +16,7 @@
             <header class="wrapper">
                 <div class="logo">
                     <a href="index.html">
-                        <img src="assets/images/eb-logo.svg" alt="Easebuzz">
+                        <img src="assets/images/Easebuzz_Logo_ White_Text.svg" alt="Easebuzz">
                     </a>
                 </div>
 
@@ -32,22 +32,25 @@
                     <div class="card">
                         <h2>Easebuzz-lib For JSP</h2>
                         <hr>
-                        <p>There are five Easebuzz Payment Gateway API</p>
+                        <p>There are six Easebuzz Payment Gateway API</p>
                         <ul class="tabs">
                             <li id="initiate_payment_tab">
                                 <a href="/Easebuzz_javaKit/initiatepayment.jsp">Initiate Payment API</a>
                             </li>
                             <li id="transaction_tab">
-                                <a href="/Easebuzz_javaKit/transactions.jsp">Transaction API</a>
+                                <a href="/Easebuzz_javaKit/transactions.jsp">Transaction API V2</a>
                             </li>
                             <li id="transaction_date_tab">
-                                <a href="/Easebuzz_javaKit/transactionDate.jsp">Transaction Date API</a>
+                                <a href="/Easebuzz_javaKit/transactionDate.jsp">Transaction API (by date range)</a>
                             </li>
                             <li id="refund_tab">
-                                <a href="/Easebuzz_javaKit/refund.jsp">Refund API</a>
+                                <a href="/Easebuzz_javaKit/refund.jsp">Refund API V2</a>
+                            </li>
+                            <li id="refund_status_tab">
+                                <a href="/Easebuzz_javaKit/refund_status.jsp">Refund Status API </a>
                             </li>
                             <li id="payout_tab">
-                                <a href="/Easebuzz_javaKit/payout.jsp">Payout API</a>
+                                <a href="/Easebuzz_javaKit/payout.jsp">Payout API V2</a>
                             </li>
                         </ul>
                     </div>   

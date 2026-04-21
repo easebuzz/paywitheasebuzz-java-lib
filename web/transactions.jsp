@@ -7,7 +7,7 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0">
         <meta http-equiv="X-UA-Compatible" content="ie=edge">
         <link rel="stylesheet" href="assets/css/style.css">
-        <title>Transaction API</title>
+        <title>Transaction API V2</title>
 
     </head>
     
@@ -16,7 +16,7 @@
             <header class="wrapper">
                 <div class="logo">
                     <a href="#">
-                        <img src="assets/images/eb-logo.svg" alt="Easebuzz">
+                        <img src="assets/images/Easebuzz_Logo_ White_Text.svg" alt="Easebuzz">
                     </a>
                 </div>
 
@@ -27,7 +27,7 @@
         </div>
 
         <div class="form-container">
-            <h2>TRANSACTION API</h2>
+            <h2>TRANSACTION API V2</h2>
             <hr>
             <form method="POST" action="transactions_return.jsp">
                 
@@ -36,26 +36,9 @@
                     <hr>
                     <div class="mandatory-data">
                         <div class="form-field">
-                            <label for="txnid">Merchant Transaction ID<sup>*</sup></label>
+                            <label for="txnid">Transaction ID<sup>*</sup></label>
                             <input id="txnid" class="txnid" name="txnid" value="" required placeholder="ASD12345">
                         </div>
-        
-                        <div class="form-field">
-                            <label for="amount">Transaction Amount<sup>(should be float)*</sup></label>
-                            <input id="amount" class="amount" name="amount" value="" required placeholder="125.25">
-                        </div>
-        
-                        <div class="form-field">
-                            <label for="email">Customer Email ID<sup>*</sup></label>
-                            <input id="email" class="email" name="email" value="" required placeholder="trasaction@easebuzz.in">
-                        </div>
-        
-                        <div class="form-field">
-                            <label for="phone">Customer Phone Number<sup>*</sup></label>
-                            <input id="phone" class="phone" name="phone" value="" required placeholder="0123456789">
-                        </div>
-        
-                                           
                     </div>
                     
                     <div class="btn-submit">

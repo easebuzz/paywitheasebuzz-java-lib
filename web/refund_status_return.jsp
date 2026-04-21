@@ -1,6 +1,6 @@
 <%-- 
-    Document   : payout_return
-    Created on : Payout API v2
+    Document   : refund_status_return
+    Created on : Refund Status API
     Author     : Easebuzz
 --%>
 <%@page contentType="text/html" pageEncoding="UTF-8"%>
@@ -37,7 +37,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="stylesheet" href="assets/css/style.css">
-    <title>Payout Response</title>
+    <title>Refund Status Response</title>
 </head>
 <body>
     <div class="grid-container">
@@ -48,13 +48,13 @@
                 </a>
             </div>
             <div class="hedding">
-                <h2><a class="highlight" href="/Easebuzz_javaKit/payout.jsp">Back</a></h2>
+                <h2><a class="highlight" href="/Easebuzz_javaKit/refund_status.jsp">Back</a></h2>
             </div>
         </header>
     </div>
 
     <div class="form-container">
-        <h2>PAYOUT API V2 RESPONSE</h2>
+        <h2>REFUND STATUS API RESPONSE</h2>
         <hr>
 
 <%!
@@ -163,13 +163,12 @@
 %>
 
 <%!
-    public boolean validateParams(String startDate, String endDate, String merchantEmail, String submerchantId, String token) {
-        Pattern datePattern = Pattern.compile("^\\d{2}-\\d{2}-\\d{4}$");
-        Pattern emailPattern = Pattern.compile("^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\\.[a-zA-Z]{2,}$");
+    public boolean validateParams(String easebuzzId, String merchantRefundId) {
+        Pattern easebuzzIdPattern = Pattern.compile("^[a-zA-Z0-9]*$");
+        Pattern merchantRefundIdPattern = Pattern.compile("^[a-zA-Z0-9_-]*$");
         
-        if (startDate != null && !startDate.trim().isEmpty() && !datePattern.matcher(startDate).matches()) return false;
-        if (endDate != null && !endDate.trim().isEmpty() && !datePattern.matcher(endDate).matches()) return false;
-        if (merchantEmail != null && !merchantEmail.trim().isEmpty() && !emailPattern.matcher(merchantEmail).matches()) return false;
+        if (easebuzzId != null && !easebuzzId.trim().isEmpty() && !easebuzzIdPattern.matcher(easebuzzId).matches()) return false;
+        if (merchantRefundId != null && !merchantRefundId.trim().isEmpty() && !merchantRefundIdPattern.matcher(merchantRefundId).matches()) return false;
         
         return true;
     }
@@ -204,68 +203,60 @@
     // Disable SSL verification for development
     disableSSLVerification();
     
-    String merchant_key = getMerchantKey();
+    String key = getMerchantKey();
     String salt = getSalt();
-    String base_url = getPayoutUrl();
+    String base_url = getRefundStatusUrl();
     
-    String start_date = clean(request.getParameter("start_date"));
-    String end_date = clean(request.getParameter("end_date"));
-    String merchant_email = clean(request.getParameter("merchant_email"));
-    String submerchant_id = clean(request.getParameter("submerchant_id"));
-    String token = clean(request.getParameter("token"));
+    String easebuzz_id = clean(request.getParameter("easebuzz_id"));
+    String merchant_refund_id = clean(request.getParameter("merchant_refund_id"));
     
     String responseData = "";
     String errorMessage = "";
     int responseCode = 0;
     
     try {
-        if (empty(start_date) || empty(end_date)) {
-            throw new Exception("Start Date and End Date are required");
+        if (empty(easebuzz_id)) {
+            throw new Exception("Easebuzz ID is required");
         }
 
-        if (!validateParams(start_date, end_date, merchant_email, submerchant_id, token)) {
+        if (!validateParams(easebuzz_id, merchant_refund_id)) {
             throw new Exception("Invalid parameter format");
         }
 
-        // Generate hash: merchant_key|start_date|end_date|salt
-        String hashString = merchant_key + "|" + start_date + "|" + end_date + "|" + salt;
+        // Build parameters for refund status API
+        Map<String, String> params = new HashMap<String, String>();
+        params.put("key", key);
+        params.put("easebuzz_id", easebuzz_id);
+        
+        // Generate hash: key|easebuzz_id|salt
+        String hashString = key + "|" + easebuzz_id + "|" + salt;
+        
         String hash = Easebuzz_Generatehash512("SHA-512", hashString);
-        
-        // Create JSON request body
-        JSONObject requestJson = new JSONObject();
-        requestJson.put("merchant_key", merchant_key);
-        requestJson.put("start_date", start_date);
-        requestJson.put("end_date", end_date);
-        requestJson.put("hash", hash);
-        
-        // Add optional parameters if provided
-        if (!empty(merchant_email)) {
-            requestJson.put("merchant_email", merchant_email);
-        }
-        if (!empty(submerchant_id)) {
-            requestJson.put("submerchant_id", submerchant_id);
-        }
-        if (!empty(token)) {
-            requestJson.put("token", token);
-        }
-        
-        // Create payout_date object
-        JSONObject payoutDateObj = new JSONObject();
-        payoutDateObj.put("start_date", start_date);
-        payoutDateObj.put("end_date", end_date);
-        requestJson.put("payout_date", payoutDateObj);
-        
-        String jsonRequestBody = requestJson.toString();
+        params.put("hash", hash);
 
+        // Add optional merchant_refund_id after hash generation
+        if (!empty(merchant_refund_id)) {
+            params.put("merchant_refund_id", merchant_refund_id);
+        }
+
+        // Build POST data properly
+        StringBuilder sb = new StringBuilder();
+        sb.append("key=").append(URLEncoder.encode(key, "UTF-8"));
+        sb.append("&easebuzz_id=").append(URLEncoder.encode(easebuzz_id, "UTF-8"));
+        if (!empty(merchant_refund_id)) {
+            sb.append("&merchant_refund_id=").append(URLEncoder.encode(merchant_refund_id, "UTF-8"));
+        }
+        sb.append("&hash=").append(URLEncoder.encode(hash, "UTF-8"));
+        
         // Make API call
         URL url = new URL(base_url);
         HttpsURLConnection con = (HttpsURLConnection) url.openConnection();
         con.setRequestMethod("POST");
-        con.setRequestProperty("Content-Type", "application/json");
+        con.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
         con.setDoOutput(true);
         
         PrintStream ps = new PrintStream(con.getOutputStream());
-        ps.print(jsonRequestBody);
+        ps.print(sb.toString());
         ps.close();
         
         responseCode = con.getResponseCode();
@@ -300,16 +291,9 @@
 
         <div class="response-container">
             <h3>Request Details:</h3>
-            <p><strong>Start Date:</strong> <%= start_date %></p>
-            <p><strong>End Date:</strong> <%= end_date %></p>
-            <% if (!empty(merchant_email)) { %>
-            <p><strong>Merchant Email:</strong> <%= merchant_email %></p>
-            <% } %>
-            <% if (!empty(submerchant_id)) { %>
-            <p><strong>Submerchant ID:</strong> <%= submerchant_id %></p>
-            <% } %>
-            <% if (!empty(token)) { %>
-            <p><strong>Token:</strong> <%= token %></p>
+            <p><strong>Easebuzz ID:</strong> <%= easebuzz_id %></p>
+            <% if (!empty(merchant_refund_id)) { %>
+            <p><strong>Merchant Refund ID:</strong> <%= merchant_refund_id %></p>
             <% } %>
             <p><strong>API URL:</strong> <%= base_url %></p>
             <p><strong>Response Code:</strong> <%= responseCode %></p>
