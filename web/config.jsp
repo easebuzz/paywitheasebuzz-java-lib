@@ -8,7 +8,7 @@
     // Merchant Configuration
     private static final String MERCHANT_KEY = "XXXXXXXXX";
     private static final String SALT = "XXXXXXXX";
-    private static final String ENVIRONMENT = "Your Env"; // "test" or "prod"
+    private static final String ENVIRONMENT = "YOUR_ENV"; // "test" or "prod"
     
     // API Base URLs
     private static final String TEST_BASE_URL = "https://testpay.easebuzz.in/";

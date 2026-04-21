@@ -7,28 +7,81 @@ A JSP-based integration kit for [Easebuzz Payment Gateway](https://easebuzz.in/)
 ## Prerequisites
 
 - **Java JDK 8+** — [Download](https://adoptium.net/)
-- **Apache Tomcat 8.5+** — [Download](https://tomcat.apache.org/download-90.cgi)
+- **Apache Tomcat 9** — [Download](https://tomcat.apache.org/download-90.cgi)
 
-Verify Java is installed:
+Verify installations:
 ```bash
 java -version
+jar --version
 ```
+
+Make sure Tomcat 9 is installed and enabled:
+```bash
+# Check if Tomcat is running
+sudo systemctl status tomcat9
+
+# If not running, enable and start it
+sudo systemctl enable tomcat9
+sudo systemctl start tomcat9
+```
+
+> **Note:** If your system does not have `systemctl` (e.g. older Linux, WSL, or Docker), use the Tomcat scripts directly:
+> ```bash
+> <tomcat-install-dir>/bin/startup.sh    # Start
+> <tomcat-install-dir>/bin/shutdown.sh   # Stop
+> ```
 
 ---
 
-## Setup (3 Steps)
+## Getting Started
+
+### Clone or Download
+
+```bash
+git clone https://github.com/<your-org>/paywitheasebuzz-java-lib.git
+cd paywitheasebuzz-java-lib
+```
+
+Or download the ZIP from GitHub and extract it.
+
+### Option A: Using Eclipse
+
+1. Open Eclipse → **File** → **Import** → **General** → **Existing Projects into Workspace**
+2. Click **Browse**, select the `paywitheasebuzz-java-lib` folder, and click **Finish**
+3. Edit `web/config.jsp` with your credentials (see [Step 1](#step-1-add-your-credentials) below)
+4. Right-click the project → **Export** → **Web** → **WAR file**
+5. Set the destination path and click **Finish**
+6. Copy the exported WAR to Tomcat's `webapps/` folder (see [Step 4](#step-4-deploy-the-war-file))
+7. Restart Tomcat (see [Step 5](#step-5-restart-tomcat))
+
+> **Tip:** If Eclipse doesn't recognize it as a web project, right-click the project → **Properties** → **Project Facets** → enable **Dynamic Web Module** and set the content directory to `web`.
+
+### Option B: Using VS Code / Terminal
+
+No IDE setup needed — just use the terminal:
+
+1. Edit `web/config.jsp` with your credentials (see [Step 1](#step-1-add-your-credentials) below)
+2. Build the WAR, deploy, and restart Tomcat by following [Step 2](#step-2-build-the-war-file) through [Step 5](#step-5-restart-tomcat)
+
+> **Recommended VS Code extensions:** [JSP Language Support](https://marketplace.visualstudio.com/items?itemName=nicklasringqvist.jsp-lang-support) for syntax highlighting.
+
+---
+
+## Setup
 
 ### Step 1: Add Your Credentials
 
-Open `web/config.jsp` and replace with your Easebuzz credentials:
+Open `web/config.jsp` and replace the placeholder values:
 
 ```jsp
 private static final String MERCHANT_KEY = "YOUR_KEY";
 private static final String SALT = "YOUR_SALT";
-private static final String ENVIRONMENT = "test"; // use "prod" for live
+private static final String ENVIRONMENT = "YOUR_ENV"; // "test" or "prod"
 ```
 
 ### Step 2: Build the WAR File
+
+You must `cd` into the `web/` directory first, then create the WAR:
 
 ```bash
 cd paywitheasebuzz-java-lib/web
@@ -37,13 +90,29 @@ jar cf ../Easebuzz_javaKit.war .
 
 This creates `Easebuzz_javaKit.war` in the project root.
 
-### Step 3: Deploy to Tomcat
+### Step 3: Find Your Tomcat Webapps Path
 
-Copy the WAR file to Tomcat's `webapps` folder:
+The `webapps` directory location depends on how Tomcat was installed:
 
-**Linux/macOS:**
+| Installation Method | Typical Path |
+|---------------------|-------------|
+| apt/yum (Linux) | `/var/lib/tomcat9/webapps/` |
+| Manual download | `<tomcat-install-dir>/webapps/` |
+| macOS (Homebrew) | `/usr/local/opt/tomcat/libexec/webapps/` |
+| Windows | `C:\Program Files\Apache Software Foundation\Tomcat 9.0\webapps\` |
+
+### Step 4: Deploy the WAR File
+
+Copy the WAR file to Tomcat's `webapps` directory:
+
+**Linux (package install):**
 ```bash
-cp Easebuzz_javaKit.war /path/to/tomcat/webapps/
+sudo cp Easebuzz_javaKit.war /var/lib/tomcat9/webapps/
+```
+
+**Linux/macOS (manual install):**
+```bash
+cp Easebuzz_javaKit.war <tomcat-install-dir>/webapps/
 ```
 
 **Windows:**
@@ -51,11 +120,58 @@ cp Easebuzz_javaKit.war /path/to/tomcat/webapps/
 copy Easebuzz_javaKit.war "C:\path\to\tomcat\webapps\"
 ```
 
-Start (or restart) Tomcat, then open:
+### Step 5: Restart Tomcat
 
+Restart Tomcat so it picks up the new WAR file:
+
+**Linux (systemd — most common):**
+```bash
+sudo systemctl restart tomcat9
 ```
-http://localhost:8080/Easebuzz_javaKit/
+
+**Linux/macOS (if `systemctl` is not available — manual install, WSL, or Docker):**
+```bash
+<tomcat-install-dir>/bin/shutdown.sh
+<tomcat-install-dir>/bin/startup.sh
 ```
+
+**Linux (using service command):**
+```bash
+sudo service tomcat9 restart
+```
+
+**Windows:**
+```cmd
+<tomcat-install-dir>\bin\shutdown.bat
+<tomcat-install-dir>\bin\startup.bat
+```
+
+Then open: `http://localhost:8080/Easebuzz_javaKit/`
+
+---
+
+## Redeploying After Changes
+
+If you modify any file inside the `web/` directory (e.g. `config.jsp`, any JSP, CSS, or JARs), you must rebuild and redeploy:
+
+```bash
+# 1. Rebuild the WAR
+cd paywitheasebuzz-java-lib/web
+jar cf ../Easebuzz_javaKit.war .
+
+# 2. Copy to Tomcat (use sudo if needed)
+sudo cp ../Easebuzz_javaKit.war /var/lib/tomcat9/webapps/
+
+# 3. Restart Tomcat (use whichever command works on your system)
+sudo systemctl restart tomcat9
+# OR
+sudo service tomcat9 restart
+# OR (manual install)
+<tomcat-install-dir>/bin/shutdown.sh && <tomcat-install-dir>/bin/startup.sh
+```
+
+> **Note:** All three steps are required. Just copying the WAR without restarting may not pick up your changes.
+
 
 ---
 
@@ -75,18 +191,40 @@ http://localhost:8080/Easebuzz_javaKit/
 ## Project Structure
 
 ```
-web/
-├── config.jsp              ← Your credentials go here
-├── index.jsp               ← Homepage
-├── initiatepayment.jsp     ← Payment form
-├── transactions.jsp        ← Transaction status form
-├── transactionDate.jsp     ← Date-wise transaction form
-├── refund.jsp              ← Refund form
-├── refund_status.jsp       ← Refund status form
-├── payout.jsp              ← Payout form
-├── response.jsp            ← Payment response handler
-├── assets/css/style.css    ← Styles
-└── WEB-INF/lib/            ← Required JARs (included)
+paywitheasebuzz-java-lib/
+├── web/                              ← Web application root
+│   ├── config.jsp                    ← Your credentials go here
+│   ├── index.jsp                     ← Homepage
+│   ├── initiatepayment.jsp           ← Payment form
+│   ├── initiate_payment_invoke.jsp   ← Payment processing
+│   ├── initiate_payment_invoke_simple.jsp
+│   ├── transactions.jsp              ← Transaction status form
+│   ├── transactions_return.jsp       ← Transaction response handler
+│   ├── transactionDate.jsp           ← Date-wise transaction form
+│   ├── transaction_date_return.jsp   ← Date transaction response handler
+│   ├── refund.jsp                    ← Refund form
+│   ├── refund_return.jsp             ← Refund response handler
+│   ├── refund_status.jsp             ← Refund status form
+│   ├── refund_status_return.jsp      ← Refund status response handler
+│   ├── payout.jsp                    ← Payout form
+│   ├── payout_return.jsp             ← Payout response handler
+│   ├── response.jsp                  ← Payment response handler
+│   ├── test_config.jsp               ← Test configuration
+│   ├── assets/
+│   │   ├── css/style.css             ← Styles
+│   │   └── images/                   ← Logo images
+│   ├── META-INF/
+│   │   └── context.xml               ← Tomcat context config
+│   └── WEB-INF/
+│       ├── web.xml                   ← Deployment descriptor
+│       ├── functions.tld             ← Custom tag library
+│       └── lib/                      ← Required JARs (included)
+│           ├── json-simple-1.1.1.jar
+│           └── jstl-1.2.jar
+├── build.xml                         ← Ant build file (NetBeans)
+├── server.xml                        ← Reference Tomcat server config
+├── web.xml                           ← Reference Tomcat global web.xml
+└── README.md
 ```
 
 ---
@@ -107,11 +245,17 @@ web/
 
 **Page not loading?**
 - Check if Tomcat is running: `http://localhost:8080`
-- Check Tomcat logs: `<tomcat>/logs/catalina.out`
+- Check Tomcat logs: `sudo tail -f /var/lib/tomcat9/logs/catalina.out`
+- Verify the WAR was extracted: check for `Easebuzz_javaKit/` folder inside `webapps/`
 
 **Hash errors?**
 - Verify your `MERCHANT_KEY` and `SALT` in `config.jsp`
 - Make sure `ENVIRONMENT` matches your credentials (test key → `"test"`)
+
+**Changes not reflecting after redeploy?**
+- Make sure you rebuilt the WAR (`jar cf`) after making changes
+- Make sure you copied the new WAR to `webapps/`
+- Restart Tomcat — a restart is required for changes to take effect
 
 **Port 8080 already in use?**
 ```bash
@@ -119,6 +263,12 @@ web/
 lsof -i :8080
 
 # Or change Tomcat port in <tomcat>/conf/server.xml
+```
+
+**Permission denied when copying WAR?**
+```bash
+# Use sudo for package-installed Tomcat
+sudo cp Easebuzz_javaKit.war /var/lib/tomcat9/webapps/
 ```
 
 ---
