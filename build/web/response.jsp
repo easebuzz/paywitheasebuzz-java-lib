@@ -67,7 +67,7 @@
             }
         %>
         <%  //reverse hash matching while response
-            String salt = "XXXXXXXXXXX";
+            String salt = "76TA69WOEW";
             Enumeration paramNames = request.getParameterNames();
             Map<String, String> params = new HashMap<String, String>();
             while (paramNames.hasMoreElements()) {
