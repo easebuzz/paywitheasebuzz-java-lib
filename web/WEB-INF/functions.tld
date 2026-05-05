@@ -9,9 +9,4 @@
     <short-name>Custom_Functions</short-name>
     <uri>http://example.com/functions</uri>
 
-    <function>
-        <name>nl2br</name>
-        <function-class>com.example.Functions</function-class>
-        <function-signature>java.lang.String nl2br(java.lang.String)</function-signature>
-    </function>
 </taglib>
